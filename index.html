@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oldest House Operations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #D3D1C7;
+      --ink-muted: #5F5E5A;
+      --ink-faint: #444441;
+      --ink-heavy: #F1EFE8;
+      --bg: #0d0d0b;
+      --bg2: #111110;
+      --red: #9B2020;
+      --red-dim: #6B1515;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: default;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 32px 0;
+      opacity: 0;
+      animation: fadeIn 1.2s ease forwards 0.3s;
+    }
+
+    .header-inner {
+      border: 1px solid #2C2C2A;
+      border-radius: 3px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .band {
+      padding: 8px 20px;
+      font-size: 7.5px;
+      letter-spacing: 5px;
+      color: var(--ink-faint);
+      text-align: center;
+    }
+
+    .band-rule-top {
+      border-top: 1.5px solid var(--ink);
+      border-bottom: 0.4px solid var(--ink-faint);
+    }
+
+    .band-rule-bottom {
+      border-top: 0.4px solid var(--ink-faint);
+      border-bottom: 1.5px solid var(--ink);
+    }
+
+    .header-body {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 32px 28px;
+    }
+
+    /* Seal */
+    .seal-wrap {
+      flex-shrink: 0;
+      width: 200px;
+    }
+
+    .seal-wrap svg {
+      width: 200px;
+      height: 200px;
+    }
+
+    .header-divider {
+      width: 0.5px;
+      height: 190px;
+      background: var(--ink-faint);
+      margin: 0 28px;
+      flex-shrink: 0;
+    }
+
+    /* Wordmark */
+    .wordmark {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .wordmark-title {
+      font-family: 'IM Fell English', serif;
+      font-size: 52px;
+      line-height: 1.05;
+      color: var(--ink);
+      letter-spacing: 1px;
+      display: block;
+    }
+
+    .wordmark-rule {
+      height: 0.75px;
+      background: var(--ink);
+      margin: 10px 0 12px;
+    }
+
+    .wordmark-sub {
+      font-size: 10px;
+      letter-spacing: 7px;
+      color: var(--ink-muted);
+      display: block;
+      margin-bottom: 18px;
+    }
+
+    .wordmark-tagline-rule {
+      height: 0.25px;
+      background: var(--ink-faint);
+      margin-bottom: 8px;
+    }
+
+    .wordmark-tagline {
+      font-size: 7.5px;
+      letter-spacing: 2px;
+      color: var(--ink-muted);
+    }
+
+    .wordmark-tagline-rule-bottom {
+      height: 0.25px;
+      background: var(--ink-faint);
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+
+    .case-file {
+      font-size: 7px;
+      letter-spacing: 1px;
+      color: var(--red);
+      text-align: right;
+    }
+
+    .header-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 20px;
+      border-top: 0.4px solid var(--ink-faint);
+      border-bottom: 1.5px solid var(--ink);
+    }
+
+    .stamp-box {
+      border: 1px solid var(--ink-faint);
+      padding: 4px 10px;
+      font-size: 7px;
+      letter-spacing: 2px;
+      color: var(--ink-faint);
+      line-height: 1.8;
+    }
+
+    .stamp-box span {
+      display: block;
+      font-size: 8px;
+      color: var(--ink-faint);
+    }
+
+    .form-ref {
+      font-size: 7px;
+      letter-spacing: 1px;
+      color: var(--ink-faint);
+    }
+
+    /* ── NAV ── */
+    nav {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 32px;
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards 1s;
+    }
+
+    .nav-inner {
+      display: flex;
+      gap: 0;
+      border-left: 1px solid #2C2C2A;
+      border-right: 1px solid #2C2C2A;
+      border-bottom: 1px solid #2C2C2A;
+    }
+
+    nav a {
+      flex: 1;
+      text-align: center;
+      padding: 10px 8px;
+      font-size: 8px;
+      letter-spacing: 3px;
+      color: var(--ink-muted);
+      text-decoration: none;
+      border-right: 0.5px solid #2C2C2A;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    nav a:last-child { border-right: none; }
+
+    nav a:hover {
+      color: var(--ink);
+      background: #111110;
+    }
+
+    nav a.red-tab {
+      color: var(--red-dim);
+    }
+
+    nav a.red-tab:hover {
+      color: var(--red);
+      background: #111110;
+    }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+
+    /* ── SECTION HEADERS ── */
+    .section-label {
+      font-size: 7.5px;
+      letter-spacing: 5px;
+      color: var(--ink-faint);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 0.5px solid #2C2C2A;
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards var(--delay, 1.4s);
+    }
+
+    /* ── INTRO BLOCK ── */
+    .intro {
+      margin-bottom: 56px;
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards 1.4s;
+    }
+
+    .intro p {
+      font-family: 'IM Fell English', serif;
+      font-size: 18px;
+      line-height: 1.8;
+      color: var(--ink);
+      max-width: 600px;
+    }
+
+    .intro p em {
+      color: var(--ink-muted);
+      font-style: italic;
+    }
+
+    .intro-note {
+      margin-top: 20px;
+      font-size: 11px;
+      color: var(--ink-muted);
+      max-width: 500px;
+      line-height: 1.9;
+      border-left: 1px solid var(--ink-faint);
+      padding-left: 16px;
+    }
+
+    /* ── SERVICES GRID ── */
+    .services {
+      margin-bottom: 56px;
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards 1.6s;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: #2C2C2A;
+      border: 1px solid #2C2C2A;
+    }
+
+    .service-card {
+      background: var(--bg);
+      padding: 24px 20px;
+      transition: background 0.2s;
+    }
+
+    .service-card:hover { background: var(--bg2); }
+
+    .service-num {
+      font-size: 7px;
+      letter-spacing: 2px;
+      color: var(--ink-faint);
+      margin-bottom: 12px;
+    }
+
+    .service-title {
+      font-family: 'IM Fell English', serif;
+      font-size: 16px;
+      color: var(--ink);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .service-desc {
+      font-size: 10px;
+      color: var(--ink-muted);
+      line-height: 1.8;
+    }
+
+    .service-card.flagged .service-num { color: var(--red-dim); }
+    .service-card.flagged .service-title { color: var(--ink); }
+
+    /* ── CASE FILE / GAME CTA ── */
+    .case-file-block {
+      margin-bottom: 56px;
+      border: 1px solid #2C2C2A;
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards 1.8s;
+    }
+
+    .case-file-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 0.5px solid #2C2C2A;
+    }
+
+    .case-file-header-label {
+      font-size: 7.5px;
+      letter-spacing: 4px;
+      color: var(--ink-faint);
+    }
+
+    .case-status {
+      font-size: 7px;
+      letter-spacing: 2px;
+      color: var(--red);
+    }
+
+    .case-file-body {
+      padding: 32px 28px;
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+    }
+
+    .case-file-text { flex: 1; }
+
+    .case-file-text h2 {
+      font-family: 'IM Fell English', serif;
+      font-size: 28px;
+      color: var(--ink);
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .case-file-text p {
+      font-size: 11px;
+      color: var(--ink-muted);
+      line-height: 1.9;
+      max-width: 420px;
+      margin-bottom: 12px;
+    }
+
+    .case-file-meta {
+      flex-shrink: 0;
+      width: 160px;
+      font-size: 8px;
+      letter-spacing: 1px;
+      color: var(--ink-faint);
+      line-height: 2.2;
+      border-left: 0.5px solid #2C2C2A;
+      padding-left: 20px;
+    }
+
+    .case-file-meta strong {
+      display: block;
+      color: var(--ink-muted);
+      font-weight: normal;
+      letter-spacing: 2px;
+      margin-bottom: 2px;
+      font-size: 7px;
+    }
+
+    .case-file-meta .val {
+      color: var(--ink);
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .case-file-meta .val.red { color: var(--red); }
+
+    .access-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 24px;
+      border: 1px solid var(--ink-faint);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 4px;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .access-btn:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+      background: #111110;
+    }
+
+    /* ── PERSONNEL ── */
+    .personnel {
+      margin-bottom: 56px;
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards 2s;
+    }
+
+    .personnel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: #2C2C2A;
+      border: 1px solid #2C2C2A;
+    }
+
+    .personnel-card {
+      background: var(--bg);
+      padding: 20px;
+    }
+
+    .personnel-card .role {
+      font-size: 7px;
+      letter-spacing: 3px;
+      color: var(--ink-faint);
+      margin-bottom: 8px;
+    }
+
+    .personnel-card .name {
+      font-family: 'IM Fell English', serif;
+      font-size: 18px;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .personnel-card .clearance {
+      font-size: 8px;
+      letter-spacing: 1px;
+      color: var(--ink-faint);
+    }
+
+    .personnel-card .clearance.red { color: var(--red-dim); }
+
+    /* ── FOOTER ── */
+    footer {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 32px 48px;
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards 2.2s;
+    }
+
+    .footer-inner {
+      border: 1px solid #2C2C2A;
+    }
+
+    .footer-band {
+      padding: 8px 20px;
+      font-size: 7px;
+      letter-spacing: 4px;
+      color: var(--ink-faint);
+      text-align: center;
+      border-top: 0.4px solid var(--ink-faint);
+      border-bottom: 1.5px solid var(--ink);
+    }
+
+    .footer-body {
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1.5px solid var(--ink);
+      border-bottom: 0.4px solid var(--ink-faint);
+    }
+
+    .footer-body span {
+      font-size: 7px;
+      letter-spacing: 2px;
+      color: var(--ink-faint);
+    }
+
+    .footer-body .red { color: var(--red-dim); }
+
+    /* ── FLICKER on load ── */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Subtle cursor blink for the terminal feel */
+    .cursor::after {
+      content: '█';
+      color: var(--ink-faint);
+      animation: blink 1.2s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .header-body { flex-direction: column; align-items: flex-start; }
+      .header-divider { width: 100%; height: 0.5px; margin: 20px 0; }
+      .seal-wrap { width: 160px; }
+      .seal-wrap svg { width: 160px; height: 160px; }
+      .wordmark-title { font-size: 38px; }
+      .services-grid { grid-template-columns: 1fr; }
+      .case-file-body { flex-direction: column; }
+      .case-file-meta { width: 100%; border-left: none; border-top: 0.5px solid #2C2C2A; padding-left: 0; padding-top: 20px; }
+      .personnel-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── HEADER ── -->
+  <header class="site-header">
+    <div class="header-inner">
+
+      <div class="band band-rule-top">
+        UNCLASSIFIED&nbsp;&nbsp;//&nbsp;&nbsp;FOR OFFICIAL USE ONLY&nbsp;&nbsp;//&nbsp;&nbsp;OHO-INTERNAL
+      </div>
+
+      <div class="header-body">
+
+        <!-- Seal SVG inline -->
+        <div class="seal-wrap">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="95" fill="none" stroke="#D3D1C7" stroke-width="1.5"/>
+            <circle cx="100" cy="100" r="87" fill="none" stroke="#444441" stroke-width="0.5"/>
+            <circle cx="100" cy="100" r="81" fill="none" stroke="#444441" stroke-width="0.25"/>
+            <!-- Ticks -->
+            <line x1="100" y1="8"  x2="100" y2="16" stroke="#444441" stroke-width="0.75"/>
+            <line x1="100" y1="183" x2="100" y2="191" stroke="#444441" stroke-width="0.75"/>
+            <line x1="8"   y1="100" x2="16"  y2="100" stroke="#444441" stroke-width="0.75"/>
+            <line x1="183" y1="100" x2="191" y2="100" stroke="#444441" stroke-width="0.75"/>
+            <line x1="29"  y1="29"  x2="35"  y2="35"  stroke="#444441" stroke-width="0.5"/>
+            <line x1="165" y1="165" x2="171" y2="171" stroke="#444441" stroke-width="0.5"/>
+            <line x1="171" y1="29"  x2="165" y2="35"  stroke="#444441" stroke-width="0.5"/>
+            <line x1="29"  y1="165" x2="35"  y2="171" stroke="#444441" stroke-width="0.5"/>
+            <!-- Building: base -->
+            <rect x="50" y="134" width="100" height="13" fill="#D3D1C7"/>
+            <!-- Columns -->
+            <rect x="56"  y="116" width="6" height="21" fill="#D3D1C7"/>
+            <rect x="67"  y="116" width="6" height="21" fill="#D3D1C7"/>
+            <rect x="78"  y="116" width="6" height="21" fill="#D3D1C7"/>
+            <rect x="89"  y="116" width="6" height="21" fill="#D3D1C7"/>
+            <rect x="100" y="116" width="6" height="21" fill="#D3D1C7"/>
+            <rect x="111" y="116" width="6" height="21" fill="#D3D1C7"/>
+            <rect x="122" y="116" width="6" height="21" fill="#D3D1C7"/>
+            <rect x="133" y="116" width="6" height="21" fill="#D3D1C7"/>
+            <!-- Entablature -->
+            <rect x="52" y="107" width="96" height="11" fill="#D3D1C7"/>
+            <!-- Pediment -->
+            <polygon points="100,78 148,107 52,107" fill="#D3D1C7"/>
+            <!-- Door — red -->
+            <rect x="93" y="120" width="13" height="16" fill="#9B2020"/>
+            <!-- Window — red, wrong -->
+            <rect x="62" y="95"  width="10" height="10" fill="#9B2020"/>
+            <!-- EST text -->
+            <text x="100" y="170" font-size="7" font-weight="400" letter-spacing="3" text-anchor="middle" fill="#5F5E5A" font-family="'Share Tech Mono', monospace">EST. — CLASSIFIED —</text>
+          </svg>
+        </div>
+
+        <div class="header-divider"></div>
+
+        <div class="wordmark">
+          <span class="wordmark-title">Oldest<br>House</span>
+          <div class="wordmark-rule"></div>
+          <span class="wordmark-sub">OPERATIONS</span>
+          <div class="wordmark-tagline-rule"></div>
+          <span class="wordmark-tagline">CONSULTATION &nbsp;·&nbsp; CONTAINMENT &nbsp;·&nbsp; COMPLIANCE</span>
+          <div class="wordmark-tagline-rule-bottom"></div>
+          <div class="case-file">CASE FILE NO. ████-0</div>
+        </div>
+
+      </div>
+
+      <div class="header-footer">
+        <div class="form-ref">FORM OHO-001-A &nbsp;&nbsp; REV. — PENDING CLEARANCE &nbsp;&nbsp; DO NOT REPRODUCE</div>
+        <div class="stamp-box">
+          <div>REVIEWED</div>
+          <span>ANOMALY LEVEL &nbsp;██████</span>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#services">SERVICES</a>
+      <a href="#active-case">ACTIVE CASE</a>
+      <a href="#personnel">PERSONNEL</a>
+      <a href="#contact">CONTACT</a>
+      <a href="#" class="red-tab">⬛ RESTRICTED ACCESS</a>
+    </div>
+  </nav>
+
+  <!-- ── MAIN ── -->
+  <main>
+
+    <!-- Intro -->
+    <section class="intro" id="about">
+      <div class="section-label" style="--delay:1.4s">ABOUT THIS OFFICE</div>
+      <p>
+        Oldest House Operations provides <em>discreet consulting services</em> to organizations experiencing anomalous infrastructure, unexplained system behavior, and phenomena that fall outside standard remediation protocols.
+      </p>
+      <p class="intro-note">
+        We do not ask what the building looked like before. We do not require a complete incident history. We require only that you follow instructions exactly, remain calm, and do not use the stairs on the east side after 6pm.<br><br>
+        Services are rendered on a case-by-case basis. Engagement terms are non-negotiable. All work is performed under a standing non-disclosure agreement with the Bureau of Unclassified Services.
+      </p>
+    </section>
+
+    <!-- Services -->
+    <section class="services" id="services">
+      <div class="section-label" style="--delay:1.6s">AVAILABLE SERVICES</div>
+      <div class="services-grid">
+
+        <div class="service-card">
+          <div class="service-num">SVC-001</div>
+          <div class="service-title">Anomalous Infrastructure Assessment</div>
+          <div class="service-desc">Environments that should not function but do. We document, contain, and provide a remediation path — or a safe perimeter.</div>
+        </div>
+
+        <div class="service-card">
+          <div class="service-num">SVC-002</div>
+          <div class="service-title">Identity & Access Containment</div>
+          <div class="service-desc">Systems that recognize personnel who are no longer present. Credentials that were never issued. We close the door.</div>
+        </div>
+
+        <div class="service-card">
+          <div class="service-num">SVC-003</div>
+          <div class="service-title">Endpoint Compliance & Hardening</div>
+          <div class="service-desc">Devices that report correctly but behave otherwise. Fleet-level assessment. Jamf. Intune. Whatever the object requires.</div>
+        </div>
+
+        <div class="service-card">
+          <div class="service-num">SVC-004</div>
+          <div class="service-title">Digital Workplace Stabilization</div>
+          <div class="service-desc">Environments where productivity has become unpredictable. Root cause elimination. Systems that work because they are understood.</div>
+        </div>
+
+        <div class="service-card">
+          <div class="service-num">SVC-005</div>
+          <div class="service-title">Incident Documentation & Runbooks</div>
+          <div class="service-desc">Physical runbooks for Sev1 scenarios. Laminated. In a binder. Accessible when the systems that store documentation are the incident.</div>
+        </div>
+
+        <div class="service-card flagged">
+          <div class="service-num">SVC-00█</div>
+          <div class="service-title">Classified Service</div>
+          <div class="service-desc">Details available upon clearance verification. If you know you need this, you already know how to reach us.</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Active Case / Game CTA -->
+    <section class="case-file-block" id="active-case">
+      <div class="case-file-header">
+        <span class="case-file-header-label">ACTIVE CASE FILE</span>
+        <span class="case-status">● STATUS: OPEN</span>
+      </div>
+      <div class="case-file-body">
+        <div class="case-file-text">
+          <h2>The Department</h2>
+          <p>
+            A situation has developed inside a building that does not appear on any floor plan. Personnel have been assigned. The coffee machine on the third floor is operational. The third floor does not exist.
+          </p>
+          <p>
+            Your objective is straightforward. Report to your desk. Complete your assigned tasks. Do not ask about the humming. Do not open the door at the end of the hall. Submit your TPS reports by end of business.
+          </p>
+          <p>
+            End of business is not guaranteed.
+          </p>
+          <a href="#" class="access-btn">REQUEST ACCESS &nbsp;→</a>
+        </div>
+        <div class="case-file-meta">
+          <strong>CASE NUMBER</strong>
+          <span class="val">████-0</span>
+          <strong>CLASSIFICATION</strong>
+          <span class="val">UNCLASSIFIED*</span>
+          <strong>ANOMALY LEVEL</strong>
+          <span class="val red">██████</span>
+          <strong>ASSIGNED TO</strong>
+          <span class="val">YOU</span>
+          <strong>STATUS</strong>
+          <span class="val">ONGOING</span>
+          <strong>*ASTERISK NOTE</strong>
+          <span class="val">Classified.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Personnel -->
+    <section class="personnel" id="personnel">
+      <div class="section-label" style="--delay:2s">PERSONNEL ON FILE</div>
+      <div class="personnel-grid">
+        <div class="personnel-card">
+          <div class="role">LEAD CONSULTANT</div>
+          <div class="name">D. Constantine-Oh</div>
+          <div class="clearance">CLEARANCE: LEVEL 4 &nbsp;·&nbsp; ACTIVE</div>
+        </div>
+        <div class="personnel-card">
+          <div class="role">BUREAU LIAISON</div>
+          <div class="name">████████</div>
+          <div class="clearance red">CLEARANCE: LEVEL █ &nbsp;·&nbsp; DO NOT INQUIRE</div>
+        </div>
+        <div class="personnel-card">
+          <div class="role">TECHNICAL OPERATIONS</div>
+          <div class="name">The Department<span class="cursor"></span></div>
+          <div class="clearance">CLEARANCE: VARIES BY FLOOR</div>
+        </div>
+        <div class="personnel-card">
+          <div class="role">RECORD KEEPING</div>
+          <div class="name">Unknown / Contested</div>
+          <div class="clearance red">CLEARANCE: SEE NOTES &nbsp;·&nbsp; NOTES MISSING</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer id="contact">
+    <div class="footer-inner">
+      <div class="footer-body">
+        <span>OLDEST HOUSE OPERATIONS &nbsp;·&nbsp; BUREAU OF UNCLASSIFIED SERVICES</span>
+        <span class="red">CASE FILE NO. ████-0</span>
+      </div>
+      <div class="footer-band">
+        EST. — CLASSIFIED — &nbsp;&nbsp;·&nbsp;&nbsp; ALL ANOMALIES DOCUMENTED &nbsp;&nbsp;·&nbsp;&nbsp; DO NOT REPRODUCE
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
